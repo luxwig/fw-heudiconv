@@ -6,6 +6,7 @@ import pprint
 import mimetypes
 import flywheel
 import json
+import math
 import pandas as pd
 from os import path
 from pathvalidate import is_valid_filename
@@ -72,6 +73,8 @@ def apply_heuristic(client, heur, acquisition_id, dry_run=False, intended_for=[]
     ftypes = ['nifti', 'bval', 'bvec', 'tsv']
     template, outtype, annotation_classes = heur
     template = force_template_format(template)
+    if annotation_classes is None:
+        annotation_classes = lambda fileinfo : True
 
     subj_replace = none_replace if subj_replace is None else subj_replace
     ses_replace = none_replace if ses_replace is None else ses_replace
@@ -85,9 +88,12 @@ def apply_heuristic(client, heur, acquisition_id, dry_run=False, intended_for=[]
 
     files.sort(key=operator.itemgetter("name"))
     for fnum, f in enumerate(files):
-        bids_vals = template.format(subject=subj_label, session=sess_label, item=fnum+1, seqitem=item_num).split("/")
+        bids_vals = template.format(subject=subj_label, session=sess_label, item=fnum+1, seqitem=item_num, halfitem = math.ceil((fnum+1)/2)).split("/")
         bids_dict = dict(zip(bids_keys, bids_vals))
         suffix = suffixes[f.type]
+
+        if not annotation_classes(f.info):
+            continue
 
         if 'BIDS' not in f.info:
             f.info['BIDS'] = ""
