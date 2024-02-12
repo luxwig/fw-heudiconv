@@ -92,7 +92,7 @@ def apply_heuristic(client, heur, acquisition_id, dry_run=False, intended_for=[]
         bids_dict = dict(zip(bids_keys, bids_vals))
         suffix = suffixes[f.type]
 
-        if not annotation_classes(f.info):
+        if not annotation_classes(f):
             continue
 
         if 'BIDS' not in f.info:
