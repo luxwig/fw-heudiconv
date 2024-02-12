@@ -74,7 +74,7 @@ def apply_heuristic(client, heur, acquisition_id, dry_run=False, intended_for=[]
     template, outtype, annotation_classes = heur
     template = force_template_format(template)
     if annotation_classes is None:
-        annotation_classes = lambda fileinfo : True
+        annotation_classes = lambda filename, fileinfo : True
 
     subj_replace = none_replace if subj_replace is None else subj_replace
     ses_replace = none_replace if ses_replace is None else ses_replace
@@ -92,7 +92,7 @@ def apply_heuristic(client, heur, acquisition_id, dry_run=False, intended_for=[]
         bids_dict = dict(zip(bids_keys, bids_vals))
         suffix = suffixes[f.type]
 
-        if not annotation_classes(f):
+        if not annotation_classes(f.name, f.info):
             continue
 
         if 'BIDS' not in f.info:
